@@ -61,10 +61,11 @@ class Linefe():
                 return self.Script[Keyvalue][Keyvalue][index][att]    
             return self.Script[Keyvalue][Keyvalue][index]
 
-    def ExecuteScript(self,KeyValue):
+    def ExecuteScript(self,KeyValue,input=None):
         """_summary_
         Returns:
         _type_: _description_
+        Input = [ValueSubstitute,Value]
         """
         for i in self.Script[KeyValue][KeyValue]:
             if(str(type(i)) == "<class 'dict'>"):
@@ -75,6 +76,11 @@ class Linefe():
                         for y in i[x]:
                             
                             if(str(type(y)) == "<class 'dict'>"):
+                                if(input!=None):
+                                    for in_i in input:
+                                        val = i[x][1].get(in_i[0])
+                                        if val is not None:
+                                            i[x][1][in_i[0]] = in_i[1]
                                 func= getattr(self.Events[key_val[0]][2],self.Events[key_val[0]][1])
                                 func(i[x])
                     except Exception as e:
