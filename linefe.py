@@ -94,7 +94,11 @@ class Linefe():
         self.Events[tag] = [parans,event,classBase]
 
     def RegisterTag(self,tag,attrs=None):
+        # Criação de registro de TAG ( se estiver fora do Esquema retornar uma mensagem de erro)  E campos obrigatorios na TAG do esquema
+        # RegisterTag(TagName,attrs=[])
+        #AINDA VOU IMPLEMENTAR ISSO.
         ...
+
 
     def NewNode(self,tagTarget,tag,content,attr=None):
         """_summary_
@@ -158,6 +162,10 @@ class Linefe():
         xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
 
     def NewXml(self,ParentName,nodes,xmlOutputName):
+        """_summary_
+        Returns:
+        _type_: _description_
+        """
         xm_elem  = xml.Element(ParentName)
         
         for key,value in nodes.items():
