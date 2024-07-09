@@ -17,9 +17,9 @@ class Linefe():
 
 
     def ReadXml(self):
-        """_summary_
-
-            _type_: _description_
+        """ReadXml
+                this function read XML choosed.
+            _type_: Xml
         """
         tree_xml = xml.parse(self.Doc)
         root = tree_xml.getroot()
@@ -50,9 +50,9 @@ class Linefe():
                 self.__AddSubNodes(E,ListElem)
 
     def ReturnScript(self,Keyvalue,index=None,att=None):
-        """_summary_
-            Returns:
-                _type_: _description_
+        """ReturnScrip
+                    this function returns script where only keyvalue = true
+                _type_: "Return"
             """
         if(index == None):
             return self.Script[Keyvalue][Keyvalue]
@@ -62,9 +62,10 @@ class Linefe():
             return self.Script[Keyvalue][Keyvalue][index]
 
     def ExecuteScript(self,KeyValue,input=None):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """ExecuteScript
+        Execute: this function execute keyvalue 
+        _type_: execute
+
         Input = [ValueSubstitute,Value]
         """
         for i in self.Script[KeyValue][KeyValue]:
@@ -87,9 +88,9 @@ class Linefe():
                         ...
                     
     def CreateEvent(self,tag,parans,event,classBase):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """CreateEvent
+        Create: create tags, parameters, events and Baseclass
+        _type_: Create
         """
         self.Events[tag] = [parans,event,classBase]
 
