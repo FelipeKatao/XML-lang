@@ -94,4 +94,88 @@ class Linefe():
         """
         self.Events[tag] = [parans,event,classBase]
 
+    def RegisterTag(self,tag,attrs=None):
+        # Criação de registro de TAG ( se estiver fora do Esquema retornar uma mensagem de erro)  E campos obrigatorios na TAG do esquema
+        # RegisterTag(TagName,attrs=[])
+        #AINDA VOU IMPLEMENTAR ISSO.
+        ...
+
+
+    def NewNode(self,tagTarget,tag,content,attr=None):
+        """_summary_
+        Returns:
+        _type_: _description_
+        """
+        xm_doc = xml.parse(self.Doc)
+        xm_root = xm_doc.getroot()
+
+        node_ = xm_root.find(tagTarget)
+        if node_ is None:
+            raise ValueError("Node dont find in XML.")
+        
+        node_new = xml.Element(tag)
+        node_new.text = content
+
+        if attr:
+            for key,value in attr.items():
+                node_new.set(key,value)
+
+        node_.append(node_new)
+        xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
+
+    def UpdateNode(self,TagTarget,value,attr=None):
+        """_summary_
+        Returns:
+        _type_: _description_
+        """
+        xm_doc = xml.parse(self.Doc)
+        xm_root = xm_doc.getroot()
+
+        node_s = xm_root.find(TagTarget)
+        if node_s is None:
+            raise ValueError("Node dont find in XML.")
+        
+        node_s.text = value
+
+        if(attr!=None):
+            for key,valor in attr.items():
+                node_s.set(key,valor)
+
+        xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
+
+    def DeleteNode(self,TagTarget):
+        """_summary_
+        Returns:
+        _type_: _description_
+        """
+        xm_doc = xml.parse(self.Doc)
+        xm_root = xm_doc.getroot()
+
+        no_find = xm_root.find('.//' + TagTarget)
+        if no_find is None:
+            raise ValueError("Node not found in XML.")
+
+        no_pai = xm_root.find('.//' + TagTarget + '/..')
+        if no_pai is None:
+            raise ValueError("Parent node not found in XML.")
+        
+        no_pai.remove(no_find)
+        xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
+
+    def NewXml(self,ParentName,nodes,xmlOutputName):
+        """_summary_
+        Returns:
+        _type_: _description_
+        """
+        xm_elem  = xml.Element(ParentName)
+        
+        for key,value in nodes.items():
+            sub_xm = xml.SubElement(xm_elem,key)
+            sub_xm.text = str(value)
+        
+        xm_tree = xml.ElementTree(xm_elem)
+
+        xm_tree.write(xmlOutputName,encoding="utf-8",xml_declaration=True)
+        return xmlOutputName
+
 
