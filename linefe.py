@@ -64,7 +64,7 @@ class Linefe():
     def ExecuteScript(self,KeyValue,input=None):
         """ExecuteScript
         Execute: this function execute keyvalue 
-        _type_: execute
+        _type_: Execute
 
         Input = [ValueSubstitute,Value]
         """
@@ -102,9 +102,9 @@ class Linefe():
 
 
     def NewNode(self,tagTarget,tag,content,attr=None):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """NewNode
+        Create: Create new element > tag, tagTarget and content 
+        _type_: Create
         """
         xm_doc = xml.parse(self.Doc)
         xm_root = xm_doc.getroot()
@@ -124,9 +124,9 @@ class Linefe():
         xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
 
     def UpdateNode(self,TagTarget,value,attr=None):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """UpdateNode
+        Update: this function updated on tagtarget and values .
+        _type_:Update
         """
         xm_doc = xml.parse(self.Doc)
         xm_root = xm_doc.getroot()
@@ -144,9 +144,9 @@ class Linefe():
         xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
 
     def DeleteNode(self,TagTarget):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """DeleteNode
+        Delete: this function delete tagtargets
+        _type_: Delete
         """
         xm_doc = xml.parse(self.Doc)
         xm_root = xm_doc.getroot()
@@ -163,9 +163,9 @@ class Linefe():
         xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
 
     def NewXml(self,ParentName,nodes,xmlOutputName):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """NewXml
+        CreateNewXml: this function created new XmlArchive
+        _type_: Xml
         """
         xm_elem  = xml.Element(ParentName)
         
