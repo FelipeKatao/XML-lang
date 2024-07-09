@@ -157,5 +157,16 @@ class Linefe():
         no_pai.remove(no_find)
         xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
 
+    def NewXml(self,ParentName,nodes,xmlOutputName):
+        xm_elem  = xml.Element(ParentName)
+        
+        for key,value in nodes.items():
+            sub_xm = xml.SubElement(xm_elem,key)
+            sub_xm.text = str(value)
+        
+        xm_tree = xml.ElementTree(xm_elem)
+
+        xm_tree.write(xmlOutputName,encoding="utf-8",xml_declaration=True)
+        return xmlOutputName
 
 
