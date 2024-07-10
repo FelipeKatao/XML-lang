@@ -176,5 +176,35 @@ class Linefe():
 
         xm_tree.write(xmlOutputName,encoding="utf-8",xml_declaration=True)
         return xmlOutputName
+    
+    def ImportsXml(self,NewXmlName,base_path="."):
+        """_summary_
+        Returns:
+        _type_: _description_
+        """
+        return self.__include__xml(NewXmlName,base_path)    
+
+    def __include__xml(self,NewXmlName,base_path="."):
+        element_t = xml.parse(self.Doc)
+        element = element_t.getroot()
+        xi_include_tag = '{http://www.w3.org/2001/XInclude}include'
+        for elem in element.findall('.//' + xi_include_tag):
+            href = elem.attrib.get('href')
+            if href:
+                included_tree = xml.parse(f"{base_path}/{href}")
+                included_root = included_tree.getroot()
+                
+                # Find parent element
+                parent_map = {c: p for p in element.iter() for c in p}
+                parent = parent_map.get(elem)
+                
+                if parent is not None:
+                    index = list(parent).index(elem)
+                    parent.remove(elem)
+                    for child in included_root:
+                        parent.insert(index, child)
+                        index += 1
+        element_t.write(NewXmlName,encoding='utf-8', xml_declaration=True)
+        return xml.dump(element)
 
 
