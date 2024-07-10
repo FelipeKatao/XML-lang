@@ -17,9 +17,9 @@ class Linefe():
 
 
     def ReadXml(self):
-        """_summary_
-
-            _type_: _description_
+        """ReadXml
+                this function read XML choosed.
+            _type_: Xml
         """
         tree_xml = xml.parse(self.Doc)
         root = tree_xml.getroot()
@@ -50,9 +50,9 @@ class Linefe():
                 self.__AddSubNodes(E,ListElem)
 
     def ReturnScript(self,Keyvalue,index=None,att=None):
-        """_summary_
-            Returns:
-                _type_: _description_
+        """ReturnScrip
+                    this function returns script where only keyvalue = true
+                _type_: "Return"
             """
         if(index == None):
             return self.Script[Keyvalue][Keyvalue]
@@ -62,9 +62,10 @@ class Linefe():
             return self.Script[Keyvalue][Keyvalue][index]
 
     def ExecuteScript(self,KeyValue,input=None):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """ExecuteScript
+        Execute: this function execute keyvalue 
+        _type_: Execute
+
         Input = [ValueSubstitute,Value]
         """
         for i in self.Script[KeyValue][KeyValue]:
@@ -87,9 +88,9 @@ class Linefe():
                         ...
                     
     def CreateEvent(self,tag,parans,event,classBase):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """CreateEvent
+        Create: create tags, parameters, events and Baseclass
+        _type_: Create
         """
         self.Events[tag] = [parans,event,classBase]
 
@@ -101,9 +102,9 @@ class Linefe():
 
 
     def NewNode(self,tagTarget,tag,content,attr=None):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """NewNode
+        Create: Create new element > tag, tagTarget and content 
+        _type_: Create
         """
         xm_doc = xml.parse(self.Doc)
         xm_root = xm_doc.getroot()
@@ -123,9 +124,9 @@ class Linefe():
         xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
 
     def UpdateNode(self,TagTarget,value,attr=None):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """UpdateNode
+        Update: this function updated on tagtarget and values .
+        _type_:Update
         """
         xm_doc = xml.parse(self.Doc)
         xm_root = xm_doc.getroot()
@@ -143,9 +144,9 @@ class Linefe():
         xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
 
     def DeleteNode(self,TagTarget):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """DeleteNode
+        Delete: this function delete tagtargets
+        _type_: Delete
         """
         xm_doc = xml.parse(self.Doc)
         xm_root = xm_doc.getroot()
@@ -162,9 +163,9 @@ class Linefe():
         xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
 
     def NewXml(self,ParentName,nodes,xmlOutputName):
-        """_summary_
-        Returns:
-        _type_: _description_
+        """NewXml
+        CreateNewXml: this function created new XmlArchive
+        _type_: Xml
         """
         xm_elem  = xml.Element(ParentName)
         
