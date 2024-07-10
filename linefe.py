@@ -241,3 +241,19 @@ class Linefe():
             raise IndexError("Node don't find")
         
         xm_tre.write(self.Doc,xml_declaration=True, encoding="UTF-8")
+
+    def RunProject(self):
+        """_summary_
+        Returns:
+        _type_: _description_
+        """
+        #Rodar o projeto do cliente todo por aqui
+        class TranspilerXML():
+            def __init__(self) -> None:
+                ...
+            def ImprimeMsg(self,a):
+                print(a)
+
+        obj = TranspilerXML()
+        obj.ImprimeMsg("asd")
+
