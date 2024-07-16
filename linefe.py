@@ -13,6 +13,7 @@ class Linefe():
         self.Script = {}
         self.SubScripts = []
         self.Events = {}
+        self.FuncXmlScripts = {}
         self.ReadXml()
 
 
@@ -21,26 +22,35 @@ class Linefe():
                 this function read XML choosed.
             _type_: Xml
         """
-        tree_xml = xml.parse(self.Doc)
+        self.LoadScriptXml(self.Doc)
+
+          
+    def LoadScriptXml(self,XmlFile,type="script"):
+        file = self.__LoadPackages(XmlFile)
+        if(type=="script"):
+            self.Script["main"] = file
+        else:
+            self.FuncXmlScripts["cod"] = file
+
+    def ScriptXml(self,XmlScript):
+        self.LoadScriptXml(XmlScript,"noscript")
+
+    def __LoadPackages(self,XmlFile):
+        tree_xml = xml.parse(XmlFile)
         root = tree_xml.getroot()
-        ScName = {}
-        ScName["App"] = root.text
-        ScName["Parans"] = root.attrib
-        self.ScriptName.append(ScName)
-        self.__readnodes(root)
 
+        def read_node(elements, list_node):
+            for child in elements:
+                transform = xml.tostring(child,encoding="unicode")
+                list_node.append(transform)
+                read_node(child, list_node)
 
-    def __readnodes(self,child):
-        valueTag ={}
-        for i in child:
-          valueTag[i.tag] = [i.text,i.attrib]
-          for a in i:
-              valueTag[i.tag].append({a.tag:[a.text,a.attrib]})
-              if(len(list(a)) >=1):
-                  self.__AddSubNodes(a,valueTag[i.tag])
+        all_nodes = []
+    
+        read_node(root, all_nodes)
+        
+        return all_nodes
 
-          self.Script[i.tag] = valueTag
-          valueTag = {}
 
 
     def __AddSubNodes(self,Element,ListElem):
@@ -250,10 +260,64 @@ class Linefe():
         #Rodar o projeto do cliente todo por aqui
         class TranspilerXML():
             def __init__(self) -> None:
-                ...
-            def ImprimeMsg(self,a):
-                print(a)
+                self.CallBacksEvents = None
+                self.functions = []
+            def MainConfigs(self,scriptConfig):
+                for i in scriptConfig["cod"]:
+                    if "<config>" in i:
+                        str_val = str(i).replace("\n","").replace("/>","").replace(">","")
+                        str_val =str_val.split("<")
+                        # add configurations strings to project
+                        for con_call in str_val:
+                            #name of callbacks
+                            if("name" in con_call):
+                                     Val_call = str(con_call).split("=")
+                                     self.CallBacksEvents =Val_call[1]
+                    else:
+                        # all functions
+                        Basefunctions = []
+                        Basefunctions.append(str(i).replace("\n","").replace("<","").replace("/>","").split(" "))
+                        for f_c in Basefunctions:
+                            dictBases = {}
+                            elemsbases =[]
+                            for f_e in f_c:
+                                elemsbases.append(f_e)
+                            dictBases[f_c[0]] = elemsbases
+                            self.functions.append(dictBases)
 
+            def ExecuteCode(self,XmlBase):
+                xm_varBase = str(XmlBase["main"]).split("<")
+                for xm in xm_varBase:
+                    val = str(self.CallBacksEvents+".").replace('"',"").replace(" ","")
+                    if val in xm:
+                        self.CallBackCode(xm)
+
+            def CallBackCode(self,code):
+                val_code = code.split(".")
+                for i_k in self.functions:
+                    for f_k in val_code:
+                        l_keys = list(i_k.keys())
+                        if l_keys[0] in f_k:
+                            print("oi")
         obj = TranspilerXML()
-        obj.ImprimeMsg("asd")
+        obj.MainConfigs(self.FuncXmlScripts)
+        obj.ExecuteCode(self.Script)
+
+    def SelectNode(self,nodepath,attr=None,value=None,text=False):
+        x_tree = xml.parse(self.Doc)
+        x_root = x_tree.getroot()
+        Results_list = []
+
+        if attr is not None and value is not None:
+            result = x_root.findall(f".//{nodepath}[@{attr}='{value}']")
+        else:
+            result = x_root.findall(f".//{nodepath}")
+        if(text == True):
+            result =  x_root.findtext(nodepath)
+            return result
+
+        for elem in result:
+            Results_list.append(xml.tostring(elem, encoding='unicode'))
+        
+        return Results_list
 
