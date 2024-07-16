@@ -43,7 +43,6 @@ class Linefe():
             for child in elements:
                 transform = xml.tostring(child,encoding="unicode")
                 list_node.append(transform)
-                read_node(child, list_node)
 
         all_nodes = []
     
@@ -298,7 +297,16 @@ class Linefe():
                     for f_k in val_code:
                         l_keys = list(i_k.keys())
                         if l_keys[0] in f_k:
-                            print("oi")
+                            self.CopillerCod(f_k,i_k)
+
+            def CopillerCod(self,code,parans):
+                #output values: of XML Value Create new function to set the output file XMl
+                # Transpiler the funcions bases.
+                # Create one XML for Dump and exit values in console.
+                print(code)
+                print(parans)
+                return "Value of XML "
+
         obj = TranspilerXML()
         obj.MainConfigs(self.FuncXmlScripts)
         obj.ExecuteCode(self.Script)
