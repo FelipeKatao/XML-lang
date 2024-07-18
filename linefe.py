@@ -257,59 +257,38 @@ class Linefe():
         _type_: _description_
         """
         #Rodar o projeto do cliente todo por aqui
-        class TranspilerXML():
-            def __init__(self) -> None:
+        class TranspilerXML(Linefe):
+            def __init__(self, docBase) -> None:
+                super().__init__(docBase)
                 self.CallBacksEvents = None
                 self.functions = []
-            def MainConfigs(self,scriptConfig):
-                for i in scriptConfig["cod"]:
-                    if "<config>" in i:
-                        str_val = str(i).replace("\n","").replace("/>","").replace(">","")
-                        str_val =str_val.split("<")
-                        # add configurations strings to project
-                        for con_call in str_val:
-                            #name of callbacks
-                            if("name" in con_call):
-                                     Val_call = str(con_call).split("=")
-                                     self.CallBacksEvents =Val_call[1]
-                    else:
-                        # all functions
-                        Basefunctions = []
-                        Basefunctions.append(str(i).replace("\n","").replace("<","").replace("/>","").split(" "))
-                        for f_c in Basefunctions:
-                            dictBases = {}
-                            elemsbases =[]
-                            for f_e in f_c:
-                                elemsbases.append(f_e)
-                            dictBases[f_c[0]] = elemsbases
-                            self.functions.append(dictBases)
+                self.xmlFiles_databases = []
+                self.xmlFiles_packs = []
 
-            def ExecuteCode(self,XmlBase):
-                xm_varBase = str(XmlBase["main"]).split("<")
-                for xm in xm_varBase:
-                    val = str(self.CallBacksEvents+".").replace('"',"").replace(" ","")
-                    if val in xm:
-                        self.CallBackCode(xm)
+            def ReturnInputs(self,list_target,TypeVal):
+                for i in list_target:
+                    if('type="'+TypeVal+'"'in i):
+                        value = i.strip().split("file=")
+                        for i_v in value:
+                            if(".xml" in i_v):
+                                i_v =i_v.replace('"',"")
+                                i_v = i_v[:-2]
+                                if(TypeVal == "xml"):
+                                    self.xmlFiles_databases.append(i_v)
+                                else:
+                                    self.xmlFiles_packs.append(i_v)
 
-            def CallBackCode(self,code):
-                val_code = code.split(".")
-                for i_k in self.functions:
-                    for f_k in val_code:
-                        l_keys = list(i_k.keys())
-                        if l_keys[0] in f_k:
-                            self.CopillerCod(f_k,i_k)
+            def CopilerXmlValues(self):
+                #Get all XMl files
+                AllReadFiles = self.SelectNode("read").replace("<","").split(">")
+                self.ReturnInputs(AllReadFiles,"xml")
+                self.ReturnInputs(AllReadFiles,"pack")
 
-            def CopillerCod(self,code,parans):
-                #output values: of XML Value Create new function to set the output file XMl
-                # Transpiler the funcions bases.
-                # Create one XML for Dump and exit values in console.
-                print(code)
-                print(parans)
-                return "Value of XML "
+                return self.Doc
+            
 
-        obj = TranspilerXML()
-        obj.MainConfigs(self.FuncXmlScripts)
-        obj.ExecuteCode(self.Script)
+        obj = TranspilerXML(self.Doc)
+        obj.CopilerXmlValues()
 
     def SelectNode(self,nodepath,attr=None,value=None,text=False):
         x_tree = xml.parse(self.Doc)
@@ -335,6 +314,6 @@ class Linefe():
         return value_doc
     
     def TransformStringToXml(self,XmlValue):
-        
+
         value = xml.ElementTree(xml.fromstring(XmlValue))
         return value.getroot()
