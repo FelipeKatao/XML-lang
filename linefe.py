@@ -260,10 +260,12 @@ class Linefe():
         class TranspilerXML(Linefe):
             def __init__(self, docBase) -> None:
                 super().__init__(docBase)
+                self.BaseScript = docBase
                 self.CallBacksEvents = None
                 self.functions = []
                 self.xmlFiles_databases = []
                 self.xmlFiles_packs = []
+                self.GetValues = []
 
             def ReturnInputs(self,list_target,TypeVal):
                 for i in list_target:
@@ -283,12 +285,43 @@ class Linefe():
                 AllReadFiles = self.SelectNode("read").replace("<","").split(">")
                 self.ReturnInputs(AllReadFiles,"xml")
                 self.ReturnInputs(AllReadFiles,"pack")
-
                 return self.Doc
+            
+            def GetValuesXml(self):
+                GetValues_ = self.SelectNode("get").replace("<","").replace("/","").split(">")
+                Node_get_path = GetValues_[1].split("=")[1]
+                for nodes_xml in self.xmlFiles_databases:
+                    self.Doc = nodes_xml
+                    self.ReadXml()
+                    self.GetValues.append(self.SelectNode(Node_get_path.replace('"','').strip()))
+            def OutValues(self):
+                self.Doc = self.BaseScript
+                self.ReadXml()
+                OutValue_ = self.SelectNode("out").replace("<","").replace("/","").split(">")
+                out_opt = OutValue_[1].split("=")[1]
+                out_opt = out_opt.replace('"',"").strip()
+                print(out_opt)
+                if(out_opt == "console"):
+                    for i in self.GetValues:
+                        print(i)
+                    return self.GetValues
+                else:
+                    tree = xml.Element(self.GetValues[0])
+                    for xml_s in self.GetValues:
+                        element_rrot = xml.fromstring(xml_s)
+                        for child in element_rrot:
+                            tree.append(child)
+                    tr_fy = xml.ElementTree(tree)
+                    with  open(out_opt,"wb") as file:
+                        tr_fy.write(file,encoding="utf-8",xml_declaration=True)
+
             
 
         obj = TranspilerXML(self.Doc)
         obj.CopilerXmlValues()
+        obj.GetValuesXml()
+        obj.OutValues()
+        #print(obj.GetValues)
 
     def SelectNode(self,nodepath,attr=None,value=None,text=False):
         x_tree = xml.parse(self.Doc)
