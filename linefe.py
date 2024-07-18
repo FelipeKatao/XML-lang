@@ -314,18 +314,27 @@ class Linefe():
     def SelectNode(self,nodepath,attr=None,value=None,text=False):
         x_tree = xml.parse(self.Doc)
         x_root = x_tree.getroot()
-        Results_list = []
+        Results_list = "<root>"
 
         if attr is not None and value is not None:
             result = x_root.findall(f".//{nodepath}[@{attr}='{value}']")
         else:
             result = x_root.findall(f".//{nodepath}")
-        if(text == True):
-            result =  x_root.findtext(nodepath)
-            return result
 
         for elem in result:
-            Results_list.append(xml.tostring(elem, encoding='unicode'))
-        
+            Results_list += xml.tostring(elem, encoding='unicode')
+        Results_list+="</root>"
         return Results_list
-
+    
+    def SelectResultNode(self,xmlObject,node):
+        
+        value_return = xmlObject.findall(f".//{node}")
+        value_doc = ""
+        for i in value_return:
+            value_doc+= xml.tostring(i,encoding="unicode")
+        return value_doc
+    
+    def TransformStringToXml(self,XmlValue):
+        
+        value = xml.ElementTree(xml.fromstring(XmlValue))
+        return value.getroot()
