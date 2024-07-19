@@ -268,6 +268,8 @@ class Linefe():
                 self.xmlFiles_packs = []
                 self.GetValues = []
                 self.varsXml = {}
+                self.__nodeNew_ = 1
+                self.__nodeget_ = 1
 
             def ReturnInputs(self,list_target,TypeVal):
                 for i in list_target:
@@ -287,10 +289,27 @@ class Linefe():
                 AllReadFiles = self.SelectNode("read").replace("<","").split(">")
                 self.ReturnInputs(AllReadFiles,"xml")
                 self.ReturnInputs(AllReadFiles,"pack")
+
+                ReadXml_code = self.SelectNode("")
+
+                for i in ReadXml_code.split("/>"):
+                    if "new" in i:
+                        self.NewNodeXml() 
+                    if "get" in i:
+                        self.GetValuesXml()
+                    if "var" in i:
+                        self.NewVarXml()
+                    if "out" in i:
+                        self.OutValues(self.root_base)
+
                 return self.Doc
 
             def GetValuesXml(self):
-                element = xml.fromstring(self.SelectNode("get")).get("node")
+                self.Doc = self.BaseScript
+                self.ReadXml()
+                element = xml.fromstring(self.SelectNode(f"get[{self.__nodeget_}]"))
+                element = element.get("node")
+                self.__nodeget_+=1
                 for nodes_xml in self.xmlFiles_databases:
                     self.Doc = nodes_xml
                     self.ReadXml()
@@ -299,7 +318,9 @@ class Linefe():
             def NewNodeXml(self):
                 self.Doc = self.BaseScript
                 self.ReadXml()
-                element = xml.fromstring(self.SelectNode("new"))
+                print(self.Doc)
+                element = xml.fromstring(self.SelectNode(f"new[{self.__nodeNew_}]"))
+                self.__nodeNew_+=1
                 value = element.get("text")
                 attr_val = element.get("attr")
                 node_name = element.get("name")
@@ -338,16 +359,19 @@ class Linefe():
                     return self.GetValues
                 else:
                     root = xml.Element(rootKeys[0])
-
+                    val_xtr ="<"+rootKeys[1]+">"
                     for xml_s in self.GetValues:
                         try:
                             xml_s = xml_s.strip()
-                            element_root = xml.fromstring("<"+rootKeys[1]+">"+xml_s+"</"+rootKeys[1]+">\n")
-                            root.append(element_root)
+                            #element_root = xml.fromstring("<"+rootKeys[1]+">"+xml_s+"</"+rootKeys[1]+">\n")
+                            #element_root = xml.fromstring(xml_s)
+                            val_xtr += xml_s +"\n"
+                            #root.append(element_root)
                         except xml.ParseError as e:
                             print(f"Erro ao analisar o XML: {e}")
                             continue
-
+                    val_xtr +="</"+rootKeys[1]+">"
+                    root.append(xml.fromstring(val_xtr))
                     tr_fy = xml.ElementTree(root)
                     
                     with open(OutValue_, "wb") as file:
@@ -357,10 +381,6 @@ class Linefe():
 
         obj = TranspilerXML(self.Doc)
         obj.CopilerXmlValues()
-        obj.NewVarXml()
-        obj.GetValuesXml()
-        obj.NewNodeXml()
-        obj.OutValues(self.root_base)
 
     def SelectNode(self,nodepath,attr=None,value=None,text=False):
         x_tree = xml.parse(self.Doc)
