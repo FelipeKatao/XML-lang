@@ -10,4 +10,7 @@
         <nome>Felipe</nome>
         <nome>Felipe</nome>
     </data>
+    <data>
+        <teste.node node.a="testenode" node.b="teste node a">teste</teste.node>
+    </data>
 </root>

@@ -294,6 +294,26 @@ class Linefe():
                     self.Doc = nodes_xml
                     self.ReadXml()
                     self.GetValues.append(self.SelectNode(element))
+
+            def NewNodeXml(self):
+                self.Doc = self.BaseScript
+                self.ReadXml()
+                element = xml.fromstring(self.SelectNode("new"))
+                value = element.get("text")
+                attr_val = element.get("attr")
+                node_name = element.get("name")
+
+                if(attr_val != None):
+                    attr_val = attr_val.split(",")
+                    result_node = "<"+node_name
+                    for i in attr_val:
+                        i = i.split(":")
+                        result_node += ' '+i[0].replace("@","")+'="'+i[1]+'"'
+                    result_node+=">"+value+"</"+node_name+">"
+                    self.GetValues.append(result_node)
+                else:
+                    self.GetValues.append("<"+node_name+">"+value+"</"+node_name+">")
+
             def OutValues(self,rootKeys):
                 self.Doc = self.BaseScript
                 self.ReadXml()
@@ -324,6 +344,7 @@ class Linefe():
         obj = TranspilerXML(self.Doc)
         obj.CopilerXmlValues()
         obj.GetValuesXml()
+        obj.NewNodeXml()
         obj.OutValues(self.root_base)
 
     def SelectNode(self,nodepath,attr=None,value=None,text=False):
