@@ -267,6 +267,7 @@ class Linefe():
                 self.xmlFiles_databases = []
                 self.xmlFiles_packs = []
                 self.GetValues = []
+                self.varsXml = {}
 
             def ReturnInputs(self,list_target,TypeVal):
                 for i in list_target:
@@ -303,6 +304,9 @@ class Linefe():
                 attr_val = element.get("attr")
                 node_name = element.get("name")
 
+                if("$![" in value):
+                    value = self.varsXml[value.replace("$![","").replace("]","")][0]
+
                 if(attr_val != None):
                     attr_val = attr_val.split(",")
                     result_node = "<"+node_name
@@ -313,6 +317,16 @@ class Linefe():
                     self.GetValues.append(result_node)
                 else:
                     self.GetValues.append("<"+node_name+">"+value+"</"+node_name+">")
+
+            def NewVarXml(self):
+                self.Doc = self.BaseScript
+                self.ReadXml()
+                varValue_ = xml.fromstring(self.SelectNode("var"))
+                value_var = varValue_.get("value")
+                type_var = varValue_.get("type")
+                name_var = varValue_.get("name")
+
+                self.varsXml[name_var] = [value_var,type_var]
 
             def OutValues(self,rootKeys):
                 self.Doc = self.BaseScript
@@ -343,6 +357,7 @@ class Linefe():
 
         obj = TranspilerXML(self.Doc)
         obj.CopilerXmlValues()
+        obj.NewVarXml()
         obj.GetValuesXml()
         obj.NewNodeXml()
         obj.OutValues(self.root_base)
