@@ -7,13 +7,14 @@ class Linefe():
             _type_: _description_
         """
     def __init__(self,docBase) -> None:
-        
+
         self.Doc = docBase
         self.ScriptName = []
         self.Script = {}
         self.SubScripts = []
         self.Events = {}
         self.FuncXmlScripts = {}
+        self.root_base = ["root","data"]
         self.ReadXml()
 
 
@@ -24,7 +25,7 @@ class Linefe():
         """
         self.LoadScriptXml(self.Doc)
 
-          
+
     def LoadScriptXml(self,XmlFile,type="script"):
         file = self.__LoadPackages(XmlFile)
         if(type=="script"):
@@ -45,9 +46,9 @@ class Linefe():
                 list_node.append(transform)
 
         all_nodes = []
-    
+
         read_node(root, all_nodes)
-        
+
         return all_nodes
 
 
@@ -67,12 +68,12 @@ class Linefe():
             return self.Script[Keyvalue][Keyvalue]
         else:
             if(att!= None):
-                return self.Script[Keyvalue][Keyvalue][index][att]    
+                return self.Script[Keyvalue][Keyvalue][index][att]
             return self.Script[Keyvalue][Keyvalue][index]
 
     def ExecuteScript(self,KeyValue,input=None):
         """ExecuteScript
-        Execute: this function execute keyvalue 
+        Execute: this function execute keyvalue
         _type_: Execute
 
         Input = [ValueSubstitute,Value]
@@ -84,7 +85,7 @@ class Linefe():
                     try:
                         self.Events[key_val[0]]
                         for y in i[x]:
-                            
+
                             if(str(type(y)) == "<class 'dict'>"):
                                 if(input!=None):
                                     for in_i in input:
@@ -95,7 +96,7 @@ class Linefe():
                                 func(i[x])
                     except Exception as e:
                         ...
-                    
+
     def CreateEvent(self,tag,parans,event,classBase):
         """CreateEvent
         Create: create tags, parameters, events and Baseclass
@@ -112,7 +113,7 @@ class Linefe():
 
     def NewNode(self,tagTarget,tag,content,attr=None):
         """NewNode
-        Create: Create new element > tag, tagTarget and content 
+        Create: Create new element > tag, tagTarget and content
         _type_: Create
         """
         xm_doc = xml.parse(self.Doc)
@@ -121,7 +122,7 @@ class Linefe():
         node_ = xm_root.find(tagTarget)
         if node_ is None:
             raise ValueError("Node dont find in XML.")
-        
+
         node_new = xml.Element(tag)
         node_new.text = content
 
@@ -143,7 +144,7 @@ class Linefe():
         node_s = xm_root.find(TagTarget)
         if node_s is None:
             raise ValueError("Node dont find in XML.")
-        
+
         node_s.text = value
 
         if(attr!=None):
@@ -167,7 +168,7 @@ class Linefe():
         no_pai = xm_root.find('.//' + TagTarget + '/..')
         if no_pai is None:
             raise ValueError("Parent node not found in XML.")
-        
+
         no_pai.remove(no_find)
         xm_doc.write(self.Doc,encoding="utf-8",xml_declaration=True)
 
@@ -177,22 +178,22 @@ class Linefe():
         _type_: Xml
         """
         xm_elem  = xml.Element(ParentName)
-        
+
         for key,value in nodes.items():
             sub_xm = xml.SubElement(xm_elem,key)
             sub_xm.text = str(value)
-        
+
         xm_tree = xml.ElementTree(xm_elem)
 
         xm_tree.write(xmlOutputName,encoding="utf-8",xml_declaration=True)
         return xmlOutputName
-    
+
     def ImportsXml(self,NewXmlName,ParentNodeName,base_path="."):
         """_summary_
         Returns:
         _type_: _description_
         """
-        return self.__include__xml(NewXmlName,ParentNodeName,base_path)    
+        return self.__include__xml(NewXmlName,ParentNodeName,base_path)
 
     def __include__xml(self,NewXmlName,ParentNodeName,base_path="."):
         element_t = xml.parse(self.Doc)
@@ -203,11 +204,11 @@ class Linefe():
             if href:
                 included_tree = xml.parse(f"{base_path}/{href}")
                 included_root = included_tree.getroot()
-                
+
                 # Find parent element
                 parent_map = {c: p for p in element.iter() for c in p}
                 parent = parent_map.get(elem)
-                
+
                 if parent is not None:
                     index = list(parent).index(elem)
                     parent.remove(elem)
@@ -217,7 +218,7 @@ class Linefe():
         element_t.write(NewXmlName,encoding='utf-8', xml_declaration=True)
         self.__modifyRootName(ParentNodeName)
         return xml.dump(element)
-    
+
     def __modifyRootName(self,newRootName):
         t_xml = xml.parse(self.Doc)
         old_xml = t_xml.getroot()
@@ -248,7 +249,7 @@ class Linefe():
             target_node.append(xi_include)
         else:
             raise IndexError("Node don't find")
-        
+
         xm_tre.write(self.Doc,xml_declaration=True, encoding="UTF-8")
 
     def RunProject(self):
@@ -286,47 +287,49 @@ class Linefe():
                 self.ReturnInputs(AllReadFiles,"xml")
                 self.ReturnInputs(AllReadFiles,"pack")
                 return self.Doc
-            
+
             def GetValuesXml(self):
-                GetValues_ = self.SelectNode("get").replace("<","").replace("/","").split(">")
-                Node_get_path = GetValues_[1].split("=")[1]
+                element = xml.fromstring(self.SelectNode("get")).get("node")
                 for nodes_xml in self.xmlFiles_databases:
                     self.Doc = nodes_xml
                     self.ReadXml()
-                    self.GetValues.append(self.SelectNode(Node_get_path.replace('"','').strip()))
-            def OutValues(self):
+                    self.GetValues.append(self.SelectNode(element))
+            def OutValues(self,rootKeys):
                 self.Doc = self.BaseScript
                 self.ReadXml()
-                OutValue_ = self.SelectNode("out").replace("<","").replace("/","").split(">")
-                out_opt = OutValue_[1].split("=")[1]
-                out_opt = out_opt.replace('"',"").strip()
-                print(out_opt)
-                if(out_opt == "console"):
+                OutValue_ = xml.fromstring(self.SelectNode("out")).get("type")
+                if(OutValue_ == "console"):
                     for i in self.GetValues:
                         print(i)
                     return self.GetValues
                 else:
-                    tree = xml.Element(self.GetValues[0])
-                    for xml_s in self.GetValues:
-                        element_rrot = xml.fromstring(xml_s)
-                        for child in element_rrot:
-                            tree.append(child)
-                    tr_fy = xml.ElementTree(tree)
-                    with  open(out_opt,"wb") as file:
-                        tr_fy.write(file,encoding="utf-8",xml_declaration=True)
+                    root = xml.Element(rootKeys[0])
 
-            
+                    for xml_s in self.GetValues:
+                        try:
+                            xml_s = xml_s.strip()
+                            element_root = xml.fromstring("<"+rootKeys[1]+">"+xml_s+"</"+rootKeys[1]+">\n")
+                            root.append(element_root)
+                        except xml.ParseError as e:
+                            print(f"Erro ao analisar o XML: {e}")
+                            continue
+
+                    tr_fy = xml.ElementTree(root)
+                    
+                    with open(OutValue_, "wb") as file:
+                        tr_fy.write(file, encoding="utf-8", xml_declaration=True)
+
+
 
         obj = TranspilerXML(self.Doc)
         obj.CopilerXmlValues()
         obj.GetValuesXml()
-        obj.OutValues()
-        #print(obj.GetValues)
+        obj.OutValues(self.root_base)
 
     def SelectNode(self,nodepath,attr=None,value=None,text=False):
         x_tree = xml.parse(self.Doc)
         x_root = x_tree.getroot()
-        Results_list = "<root>"
+        Results_list = ""
 
         if attr is not None and value is not None:
             result = x_root.findall(f".//{nodepath}[@{attr}='{value}']")
@@ -335,17 +338,16 @@ class Linefe():
 
         for elem in result:
             Results_list += xml.tostring(elem, encoding='unicode')
-        Results_list+="</root>"
         return Results_list
-    
+
     def SelectResultNode(self,xmlObject,node):
-        
+
         value_return = xmlObject.findall(f".//{node}")
         value_doc = ""
         for i in value_return:
             value_doc+= xml.tostring(i,encoding="unicode")
         return value_doc
-    
+
     def TransformStringToXml(self,XmlValue):
 
         value = xml.ElementTree(xml.fromstring(XmlValue))
